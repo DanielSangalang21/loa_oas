@@ -52,8 +52,7 @@ paths:
         in: query
         required: true
         description: |
-          System credentials password<br>
-          The value is **encrypted** if the **secret** parameter is **provided**.
+          Encrypted system credentials password
         schema:
           type: string
       - name: del
