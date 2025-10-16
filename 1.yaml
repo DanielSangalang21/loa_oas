@@ -1,0 +1,155 @@
+openapi: 3.0.1
+info:
+  title: LandBank OTP Authenticator
+  version: v1.9
+  description: |
+    LANDBANK’s Electronic Banking Channels require One-Time PIN (OTP) for authorization to certain 
+    type of transactions as security augmentation before gaining access into the system or prior to 
+    utilizing particular services. 
+    The OTP System provides two-factor authentication to existing LBP systems. Two-factor 
+    authentication is a method in which a user is granted access only after successfully confirming his 
+    identity using two different components, which are usually categorized into three classifications:
+    
+    1. Knowledge (something the user knows) 
+    2. Possession (something the user has) 
+    3. Inherence (something the user is) 
+    
+    The OTP System is capable of delivering OTP via SMS/email, or via Offline OTP Generator.  The OTP 
+    Generator is a time-based OTP that aims to easily and quickly provide OTP to the client by generating 
+    it within e-banking channel and no longer sending via SMS or text messaging.
+    
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+paths:
+  /OTP_SYSTEM/OTPValidation.htm:
+    get:
+      description: |
+        This provides a facility to allow the user to enter his OTP on behalf of the channel.  OTP System will 
+        redirect back to the Callback URL defined when creating system credential upon completion of OTP 
+        validation.  
+      tags:
+      - OTP Validation
+      operationId: OTPValidationV1
+      parameters: 
+      - name: sys
+        in: query
+        description: |
+          System code<br>
+          The value is **encrypted** if the **secret** parameter is **provided**.
+        required: true
+        schema:
+          type: string
+      - name: sysusr
+        in: query
+        required: true
+        description: |
+          System credentials user ID<br>
+          The value is **encrypted** if the **secret** parameter is **provided**.
+        schema:
+          type: string
+      - name: syspass
+        in: query
+        required: true
+        description: |
+          System credentials password<br>
+          The value is **encrypted** if the **secret** parameter is **provided**.
+        schema:
+          type: string
+      - name: del
+        in: query
+        required: true
+        description: |
+          Indicates the delivery method:
+          - 1 – SMS
+          - 2 – EMAIL
+        schema:
+          type: string
+          enum: 
+            - '1'
+            - '2'
+          example: '1'
+      - name: dest
+        in: query
+        description: |
+          The value is **encrypted** if the **secret** parameter is **provided**.
+        required: true
+        schema:
+          type: string
+      - name: uid
+        in: query
+        required: true
+        description: |
+          The value is **encrypted** if the **secret** parameter is **provided**.
+        schema:
+          type: string
+      - name: secret
+        in: query
+        description: | 
+          Used to check if parameters were changed. Computed as follows: <br>
+          `encrypted(sys) + encrypted(sysusr) + encrypted(pass) + delivery + encrypted(dest) + encrypted(uid)`
+          
+          The computed value for **secret** is **encrypted** as well.
+        schema:
+          type: string
+      responses:
+        '302':
+          description: |
+            Redirects to the same controller with the `validURL` parameter
+            when the request parameters are successfully validated.
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                    <title>OTP_SYSTEM</title>
+                  </head>
+                  <body>
+                    <h3>ONE-TIME PIN</h3>
+                      THIS IS A SAMPLE ONLY
+                  </body>
+                  </html>
+        '403':
+          description: |
+            Response if the parameters sent is invalid
+          content:
+            text/html:
+              schema:
+                type: string
+                example: |
+                  <!DOCTYPE html>
+                  <html lang="en">
+                  <head>
+                    <title>OTP_SYSTEM</title>
+                  </head>
+                  <body>
+                    EXAMPLE ERROR RESPONSES
+                    
+                    <span>
+                      Unable to access this transaction : System Error: System Credentials is not existing. Pls contact System Administrator.
+                    </span>
+                    
+                    <span>
+                      Unable to access this transaction : System Error: Missing Parameters in URL. Pls contact System Administrator.
+                    </span>
+                    
+                    <span>
+                      Unable to access this transaction : System Error: Invalid token. Pls contact System Administrator.
+                    </span>
+                    
+                  </body>
+                  </html>
+components:
+  schemas:
+    GenericResponseBean:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        errorMessage:
+          type: string
