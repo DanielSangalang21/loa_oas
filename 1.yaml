@@ -87,6 +87,7 @@ paths:
         in: query
         description: | 
           Used to check if parameters were changed. Computed as follows: <br>
+          
           `encrypted(sys) + encrypted(sysusr) + encrypted(pass) + delivery + encrypted(dest) + encrypted(uid)`
           
           The computed value for **secret** is **encrypted** as well.
